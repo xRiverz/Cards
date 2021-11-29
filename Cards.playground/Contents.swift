@@ -1,72 +1,93 @@
-import UIKit
+import Foundation
 
-struct Card{
-    var color : String
-    var roll : Int
+enum CardSuits: String, CaseIterable {
     
-    init(color : String){
-        self.color = color
-        if color == "Blue" {
-            roll = [1,2].randomElement()!
-        }else if color == "Red" {
-            roll = [3,4].randomElement()!
-        }else {
-            roll = [4,5,6].randomElement()!
-        }
+    case color = "Color"
+    case roll = "roll"
+
+}
+
+enum CardValue: Int, CaseIterable {
+    case colors = 1, Red, Blue, Green
+}
+
+struct PlayingCard {
+
+    var cardValue: CardValue
+    var cardSuit: CardSuits
+    
+    init(value: CardValue, suit: CardSuits)
+    {
+        self.cardValue = value
+        self.cardSuit = suit
+    }
+    
+    func cardName() {
+        print("\(cardValue) of \(cardSuit)")
     }
 }
 
-class Deck{
-    var cards : [Card] = []
+class CardDeck {
     
-    init(){
-        for _ in 0...9{
-            cards.append(Card(color: "Red"))
-            cards.append(Card(color: "Green"))
-            cards.append(Card(color: "Blue"))
-        }
-        cards.shuffle()
+    var cardsRemaining: Int
+    var deck: [PlayingCard]
+    
+    init() {
+        cardsRemaining = 52
+        deck = []
     }
     
-    func deal() -> Card{
-        return cards.removeFirst()
-    }
+    func createDeck() {
     
-    func isEmpty() -> Bool {
-        return cards.isEmpty
-    }
+        for suit in CardSuits.allCases {
+            
+            for value in CardValue.allCases {
     
-    func shuffle(){
-        self.cards.shuffle()
-    }
-}
-
-class Player{
-    var name: String
-    var hand: [Card]
-    
-    init(name:String){
-        self.name = name
-        self.hand = []
-    }
-    
-    func draw(deck:Deck) -> Card {
-        let card = deck.deal()
-        hand.append(card)
-        return card
-    }
-    
-    func rollDice() -> Int {
-        return [1,2,3,4,5,6].randomElement()!
-    }
-    
-    func matchingCards (color:String,roll:Int) -> Int{
-        var counter = 0
-        for card in hand{
-            if card.color == color && card.roll == roll{
-                counter = counter + 1
+                deck.append(PlayingCard(value: value, suit: suit))
             }
         }
-        return counter
+    }
+    
+    func listDeck() {
+        
+        var count = 0
+        
+        for card in deck {
+        print(card)
+        count += 1
+        }
+        print(count)
+    }
+    
+    func shuffleDeck() {
+        
+        deck.shuffle()
+        
+    }
+    
+    func drawCard() {
+        
+        guard let cardDrawn = deck.popLast() else {
+            print("No cards left in deck!")
+            return
+        }
+        if self.cardsRemaining >= 1 {
+         
+            self.cardsRemaining -= 1
+            
+            print("You drew:")
+            print(cardDrawn.cardName())
+            print(cardsRemaining)
+        }
+        
+        else {
+            print("No cards left in deck!")
+        }
     }
 }
+
+var deck = CardDeck()
+
+deck.createDeck()
+deck.shuffleDeck()
+deck.drawCard()
